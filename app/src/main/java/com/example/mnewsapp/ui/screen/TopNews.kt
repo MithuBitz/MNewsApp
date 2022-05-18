@@ -9,6 +9,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +30,7 @@ import com.example.mnewsapp.component.SearchBar
 import com.example.mnewsapp.models.NewsManager
 import com.example.mnewsapp.models.TopNewsArticles
 import com.example.mnewsapp.models.TopNewsResponse
+import com.example.mnewsapp.ui.MainViewModel
 import com.skydoves.landscapist.coil.CoilImage
 
 
@@ -36,17 +38,17 @@ import com.skydoves.landscapist.coil.CoilImage
 fun TopNews(navController: NavController,
             articles: List<TopNewsArticles>,
             query: MutableState<String>,
-            newsManager: NewsManager){
+            viewModel: MainViewModel){
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         //Text(text = "Top News", fontWeight = FontWeight.SemiBold)
         //To show the search bar
-        SearchBar(query = query, newsManager)
+        SearchBar(query = query, viewModel = viewModel)
 
         //After Search the serch top news list will be stored so that it will display on the lazy
         val searchText = query.value
         val resultList = mutableListOf<TopNewsArticles>()
         if (searchText != "") {
-            resultList.addAll(newsManager.searchedNewRespose.value.articles ?: articles)
+            resultList.addAll(viewModel.searchedNewsResponse.collectAsState().value.articles ?: articles)
         } else {
             resultList.addAll(articles)
         }

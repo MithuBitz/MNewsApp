@@ -27,9 +27,10 @@ import androidx.compose.ui.unit.dp
 import com.example.mnewsapp.R
 import com.example.mnewsapp.models.NewsManager
 import com.example.mnewsapp.models.TopNewsArticles
+import com.example.mnewsapp.ui.MainViewModel
 
 @Composable
-fun Sources(newsManager: NewsManager){
+fun Sources(viewModel: MainViewModel){
 
     //Crete a list for the top bar menu icon
     val items = listOf(
@@ -43,7 +44,7 @@ fun Sources(newsManager: NewsManager){
 
     Scaffold(topBar = {
         //Design the top app bar with the dropdown menu
-        TopAppBar(title = { Text(text = "${newsManager.sourceName.value} Sources")},
+        TopAppBar(title = { Text(text = "${viewModel.sourceName.collectAsState().value} Sources")},
                 actions = {
                     var menuExpanded by remember {
                         mutableStateOf(false)
@@ -56,7 +57,8 @@ fun Sources(newsManager: NewsManager){
                         DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
                             items.forEach { 
                                 DropdownMenuItem(onClick = {
-                                    newsManager.sourceName.value = it.second
+                                    viewModel.sourceName.value = it.second
+                                    viewModel.getArticleBySource()
                                     menuExpanded = false
                                 }) {
                                     Text(it.first)
@@ -68,9 +70,9 @@ fun Sources(newsManager: NewsManager){
             )
     }) {
         //Cal the getArticleBySource function so that list is available
-        newsManager.getArticleBySource()
+        viewModel.getArticleBySource()
         //Store the list value in a variable so we can iterate through it
-        val articles = newsManager.getArticleBySource.value
+        val articles = viewModel.getArticleBySource.collectAsState().value
         SourceContent(articles = articles.articles ?: listOf())
     }
 }
